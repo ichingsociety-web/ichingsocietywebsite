@@ -64,12 +64,111 @@
             text-decoration: underline;
         }
     </style>
+
+    <style>
+        :root {
+            --society-green: #2d5a27; /* A deep, professional green */
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* The Banner Container */
+        .banner-container {
+            position: relative;
+            width: 100%;
+            height: 400px; /* Adjust height as needed */
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The Background Image */
+        .banner-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.8); /* Dims image slightly to help text pop */
+            z-index: 1;
+        }
+
+        /* The Circular Overlay */
+        .circle-overlay {
+            position: relative;
+            z-index: 2;
+            background-color: var(--society-green);
+            color: white;
+            
+            /* Circular Shape */
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            
+            /* Center text inside the circle */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            
+            /* Visual flair */
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 4px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .circle-overlay h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.4);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .circle-overlay p {
+            margin: 0;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .location {
+            font-size: 0.85rem;
+            margin-top: 8px !important;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 480px) {
+            .circle-overlay {
+                width: 220px;
+                height: 220px;
+            }
+            .circle-overlay h1 { font-size: 1.2rem; }
+            .circle-overlay p { font-size: 0.9rem; }
+        }
+    </style>
+
 </head>
 <body>
 
-<header>
-    <h1>I-Ching Society</h1>
-    <p>華美易經學社 - Houston, Texas</p>
+<header class="banner-container">
+	<img src="img/background.jpg"
+	     alt="I-Ching Society Banner" 
+	     class="banner-image">
+
+	<div class="circle-overlay">
+	    <h1>I-Ching Society</h1>
+	    <p>華美易經學社</p>
+	    <p class="location">Houston, Texas</p>
+</div>
 </header>
 
 <section id="about">
