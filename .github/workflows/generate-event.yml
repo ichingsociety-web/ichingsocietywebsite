@@ -1,0 +1,106 @@
+name: Generate and Auto-Insert Event (Same Repo)
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date'
+        required: true
+      title:
+        description: 'Event Title'
+        required: true
+      speaker:
+        description: 'Speaker Name'
+        required: true
+      speech_title:
+        description: 'Speech/Topic Title'
+        required: true
+      location:
+        description: 'Location'
+        required: true
+        default: '華僑文教服務中心 203 室'
+      link:
+        description: 'Download Filename (Optional)'
+        required: false
+
+# Crucial: Allow the built-in token to push changes
+permissions:
+  contents: write
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        # Note: No 'repository', 'token', or 'path' needed here 
+        # because we are staying in the same house.
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Jinja2
+        run: pip install Jinja2
+
+      - name: Render and Inject HTML
+        shell: python
+        run: |
+          import os
+          import tempfile
+          from jinja2 import Environment, DictLoader, select_autoescape
+
+          data = {
+            "date": """${{ github.event.inputs.date }}""",
+            "title": """${{ github.event.inputs.title }}""",
+            "speaker": """${{ github.event.inputs.speaker }}""",
+            "speech_title": """${{ github.event.inputs.speech_title }}""",
+            "location": """${{ github.event.inputs.location }}""",
+            "link": """${{ github.event.inputs.link }}"""
+          }
+
+          env = Environment(
+            loader=DictLoader({'card': """
+              <div class="event-card">
+                  <span class="date">{{ date }}</span>
+                  <h3>{{ title }}</h3>
+                  <p><strong> {{ speaker }} </strong> {{ speech_title }}</p>
+                  {% if link -%}<p><a href="{{ link }}">download</a></p>{%- endif %}
+                  <p>地點：{{ location }}</p>
+              </div>
+
+          """}),
+            autoescape=select_autoescape(['html', 'xml'])
+          )
+
+          snippet = env.get_template('card').render(data)
+          print(snippet)
+
+          # Note: index_path is now just "index.html" since we aren't using a subfolder
+          index_path = "index.html"
+          magic_string = "<!-- INSERT NEW EVENT HERE -->"
+
+          try:
+              with tempfile.NamedTemporaryFile(delete=False, encoding="utf-8", mode="wt") as out: 
+                with open(index_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        out.write(line)
+                        if magic_string in line:
+                            out.write(snippet)
+                            print("inserted snippet")
+          except Exception as e0:
+              print(f"oops {e0}")
+              try:
+                  os.remove(out.name)
+              except Exception as e1:
+                  print(e1)
+              raise
+          os.rename(out.name, index_path)
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add new event: ${{ github.event.inputs.title }}"
+          git push
