@@ -1,6 +1,6 @@
 # Add a new event
 
-- Go to github and click Actions tab. On the left side click the "Generate and Auto-Insert Event".
+- Go [here](https://github.com/chungitan-2024/ichingsocietywebsite/actions/workflows/generate-event.yml). (same as clicking Actions tab and clicking the "Generate and Auto-Insert Event").
 - Click "Run new workflow" button on the right side. If it's not there, login.
 - Fill out details and click green run button at bottom
 - Wait ~3 minutes for it to run. Refresh and look for the green checkmark
